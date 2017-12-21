@@ -2775,6 +2775,13 @@ class Layer(MajorObject):
         else:
             return feature
 
+    def __next__(self):
+        feature = self.GetNextFeature()
+        if not feature:
+            raise StopIteration
+        else:
+            return feature
+
     def schema(self):
         output = []
         defn = self.GetLayerDefn()
@@ -7146,6 +7153,14 @@ class Geometry(_object):
         return self
 
     def next(self):
+        if self.iter_subgeom < self.GetGeometryCount():
+            subgeom = self.GetGeometryRef(self.iter_subgeom)
+            self.iter_subgeom += 1
+            return subgeom
+        else:
+            raise StopIteration
+
+    def __next__(self):
         if self.iter_subgeom < self.GetGeometryCount():
             subgeom = self.GetGeometryRef(self.iter_subgeom)
             self.iter_subgeom += 1
